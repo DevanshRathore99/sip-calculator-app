@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { Search } from "lucide-react";
-import { Button } from "./ui/button";
+import React, { useState, useEffect } from "react";
 import { Card } from "./ui/card";
-import { Input } from "./ui/input";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Button } from "@/components/ui/button"
+import { Check, ChevronsUpDown } from "lucide-react"
 
 interface StockResult {
     "1. symbol": string;
@@ -18,21 +19,33 @@ interface StockResult {
 
 export default function StockComponent() {
     const [query, setQuery] = useState("");
-    console.log(query,'Queryyyyyyy');
-    
     const [results, setResults] = useState<StockResult[]>([]);
+    const [open, setOpen] = useState(false)
+    const [value, setValue] = useState("")
+    // console.log("results", results);
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const handleSearch = async () => {
-        if (!query) return;
+    useEffect(() => {
+        if (!query) {
+            setResults([]);
+            setError(null);
+            return;
+        }
 
+        const delayDebounceFn = setTimeout(() => {
+            handleSearch();
+        }, 1500);  // Adjust debounce delay as needed (500ms is standard)
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [query]);
+
+    const handleSearch = async () => {
         setLoading(true);
         setError(null);
 
         try {
-            console.log(CountQueuingStrategy,'WQQQQWQWQWQWQW');
-            
             const response = await fetch(`/api/stock?query=${query}`);
 
             if (!response.ok) {
@@ -55,41 +68,80 @@ export default function StockComponent() {
     };
 
     return (
-        <div>
-            <Card className="flex flex-row gap-3 p-4 rounded-2xl transition duration-300 hover:shadow-xl">
-                <Input
-                    type="text"
+        <Card className="flex flex-row gap-3 p-4 rounded-2xl transition duration-300">
+            {/* <Command className="flex-1">
+                <CommandInput
                     value={query}
-                    onChange={(e) => setQuery(e.target.value)}
+                    onValueChange={setQuery}
                     placeholder="Search stocks, companies..."
-                    className="flex border-0 focus:ring-0 focus:border-blue-500 text-gray-700 bg-gray-100 rounded-md"
                 />
-                <Button
-                    variant="outline"
-                    className="p-2 hover:bg-blue-500 hover:text-white transition duration-300"
-                    onClick={handleSearch}
-                    // disabled={loading}
-                >
-                    <Search size={20} />
-                </Button>
-            </Card>
+                <CommandList>
+                    {loading && <CommandEmpty>Loading...</CommandEmpty>}
+                    {results.length === 0 && !loading && <CommandEmpty>No results found.</CommandEmpty>}
+                    <CommandGroup heading="Stocks">
+                        {results.map((stock, index) => {
+                            console.log("Rendering stock:", stock); // Log each stock item to confirm rendering
+                            return (
+                                <CommandItem
+                                    key={index}
+                                    onSelect={() => console.log(`Selected ${stock["2. name"]}`)}
+                                >
+                                    <div className="flex justify-between w-full">
+                                        <div>
+                                            <p className="font-bold">{stock["2. name"]}</p>
+                                            <p className="text-sm text-gray-500">{stock["1. symbol"]} - {stock["4. region"]}</p>
+                                        </div>
+                                        <p className="text-sm text-gray-500">{stock["8. currency"]}</p>
+                                    </div>
+                                </CommandItem>
+                            );
+                        })}
+                    </CommandGroup>
+                </CommandList>
+            </Command> */}
 
-            {loading && <div className="mt-4">Loading...</div>}
-            {error && <div className="mt-4 text-red-500">{error}</div>}
-            {results.length > 0 && (
-                <div className="mt-4">
-                    {results.map((stock) => (
-                        <Card key={stock["1. symbol"]} className="p-4 mb-2 rounded-2xl shadow-sm">
-                            <h2 className="text-lg font-bold">{stock["2. name"]}</h2>
-                            <p><strong>Symbol:</strong> {stock["1. symbol"]}</p>
-                            <p><strong>Region:</strong> {stock["4. region"]}</p>
-                            <p><strong>Currency:</strong> {stock["8. currency"]}</p>
-                            <p><strong>Market Open:</strong> {stock["5. marketOpen"]}</p>
-                            <p><strong>Market Close:</strong> {stock["6. marketClose"]}</p>
-                        </Card>
-                    ))}
-                </div>
-            )}
-        </div>
-    )
+            <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                    <Button variant="outline" role="combobox" aria-expanded={open} className="w-[300px] justify-between">
+                        {value || "Search stocks, companies..."}
+                        <ChevronsUpDown className="opacity-50" />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[300px] p-0">
+                    <Command>
+                        <CommandInput
+                            value={query}
+                            onValueChange={setQuery}
+                            placeholder="Search stocks, companies..."
+                        />
+                        <CommandList>
+                            {loading && <CommandEmpty>Loading...</CommandEmpty>}
+                            {results.length === 0 && !loading && <CommandEmpty>No results found.</CommandEmpty>}
+                            <CommandGroup heading="Stocks">
+                                {results.map((stock, index) => (
+                                    <CommandItem
+                                        key={index}
+                                        onSelect={() => {
+                                            setValue(stock["2. name"]);
+                                            setOpen(false);
+                                            console.log(`Selected ${stock["2. name"]}`);
+                                        }}
+                                    >
+                                        <div className="flex justify-between w-full">
+                                            <div>
+                                                <p className="font-bold">{stock["2. name"]}</p>
+                                                <p className="text-sm text-gray-500">{stock["1. symbol"]} - {stock["4. region"]}</p>
+                                            </div>
+                                            {/* <p className="text-sm text-gray-500">{stock["8. currency"]}</p> */}
+                                        </div>
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
+                        </CommandList>
+                    </Command>
+                </PopoverContent>
+            </Popover>
+
+        </Card>
+    );
 }
