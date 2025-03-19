@@ -117,7 +117,7 @@ export default function StockComponent() {
                         <CommandList>
                             {loading && <CommandEmpty>Loading...</CommandEmpty>}
                             {results.length === 0 && !loading && <CommandEmpty>No results found.</CommandEmpty>}
-                            <CommandGroup heading="Stocks">
+                            <CommandGroup heading={results.length > 0 ? `Stocks` : ``}>
                                 {results.map((stock, index) => (
                                     <CommandItem
                                         key={index}
