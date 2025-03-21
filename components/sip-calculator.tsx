@@ -68,7 +68,7 @@ export function SipCalculator() {
 
     return (
         <>
-            <div className="flex gap-4">
+            <div className="flex gap-4 flex-col md:flex-row">
 
                 <Card className=" transition duration-300">
                     <CardHeader>
