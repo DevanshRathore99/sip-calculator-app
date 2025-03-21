@@ -174,7 +174,7 @@ export default function StockComponent() {
 
                         {/* Stock Details Display */}
                         {stockDetails && stockDetails["Global Quote"] && (
-                            <div className="p-4 rounded-xl border border-gray-300 bg-white shadow-md flex flex-col gap-4">
+                            <div className="p-4 rounded-xl border border-gray shadow-md flex flex-col gap-4">
                                 {stockLoading ? (
                                     <div className="flex justify-center items-center"><PuffLoader color="#60a8fb" /></div>
                                 ) : (
