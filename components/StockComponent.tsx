@@ -4,6 +4,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
 import { ChevronsUpDown } from "lucide-react"
+import { PuffLoader } from "react-spinners";
 
 interface StockResult {
     "1. symbol": string;
@@ -22,7 +23,13 @@ export default function StockComponent() {
     const [results, setResults] = useState<StockResult[]>([]);
     const [open, setOpen] = useState(false)
     const [value, setValue] = useState("")
-    // console.log("results", results);
+    const [stockDetails, setStockDetails] = useState<any>(null);
+    const [news, setNews] = useState<any>(null);
+    // console.log(news, 'NNNNNNNNNNNNNNNNNnn');
+
+
+    const [stockLoading, setStockLoading] = useState(false);
+    // console.log("results@@@@@@@@@", stockDetails);
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -36,7 +43,7 @@ export default function StockComponent() {
 
         const delayDebounceFn = setTimeout(() => {
             handleSearch();
-        }, 1500);  // Adjust debounce delay as needed (500ms is standard)
+        }, 1000);  // Adjust debounce delay as needed (500ms is standard)
 
         return () => clearTimeout(delayDebounceFn);
     }, [query]);
@@ -56,6 +63,8 @@ export default function StockComponent() {
 
             if (data.bestMatches) {
                 setResults(data.bestMatches);
+                setOpen(false); // Temporarily close the Popover
+                setOpen(true) // Reopen it immediately
             } else {
                 setError("No results found.");
             }
@@ -67,81 +76,178 @@ export default function StockComponent() {
         }
     };
 
+    async function fetchStockDetails(symbol: string) {
+        setStockLoading(true);
+        try {
+            const response = await fetch(`/api/individualStock?query=${symbol}`);
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch stock details");
+            }
+
+            const stockDetails = await response.json();
+            // console.log("Stock Details:", stockDetails);
+
+            setStockDetails(stockDetails);
+        } catch (error) {
+            console.error("Error fetching stock details:", error);
+            return null;
+        }
+        finally {
+            setStockLoading(false);
+        }
+    }
+
+    async function fetchStockNews(symbol: string) {
+        try {
+            const response = await fetch(`/api/stockNews?query=${symbol}`);
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch stock news");
+            }
+
+            const news = await response.json();
+            // console.log("Stock News:", news);
+
+            setNews(news.feed[0]);
+        } catch (error) {
+            console.error("Error fetching stock news:", error);
+            return null;
+        }
+    }
+
+
     return (
-        <Card className="flex flex-row gap-3 p-4 rounded-2xl transition duration-300">
-            {/* <Command className="flex-1">
-                <CommandInput
-                    value={query}
-                    onValueChange={setQuery}
-                    placeholder="Search stocks, companies..."
-                />
-                <CommandList>
-                    {loading && <CommandEmpty>Loading...</CommandEmpty>}
-                    {results.length === 0 && !loading && <CommandEmpty>No results found.</CommandEmpty>}
-                    <CommandGroup heading="Stocks">
-                        {results.map((stock, index) => {
-                            console.log("Rendering stock:", stock); // Log each stock item to confirm rendering
-                            return (
-                                <CommandItem
-                                    key={index}
-                                    onSelect={() => console.log(`Selected ${stock["2. name"]}`)}
-                                >
-                                    <div className="flex justify-between w-full">
-                                        <div>
-                                            <p className="font-bold">{stock["2. name"]}</p>
-                                            <p className="text-sm text-gray-500">{stock["1. symbol"]} - {stock["4. region"]}</p>
-                                        </div>
-                                        <p className="text-sm text-gray-500">{stock["8. currency"]}</p>
-                                    </div>
-                                </CommandItem>
-                            );
-                        })}
-                    </CommandGroup>
-                </CommandList>
-            </Command> */}
-
-            <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                    <Button variant="outline" role="combobox" aria-expanded={open} className="w-[300px] justify-between">
-                        {value || "Search stocks, companies..."}
-                        <ChevronsUpDown className="opacity-50" />
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[300px] p-0">
-                    <Command>
-                        <CommandInput
-                            value={query}
-                            onValueChange={setQuery}
-                            placeholder="Search stocks, companies..."
-                        />
-                        <CommandList>
-                            {loading && <CommandEmpty>Loading...</CommandEmpty>}
-                            {results.length === 0 && !loading && <CommandEmpty>No results found.</CommandEmpty>}
-                            <CommandGroup heading={results.length > 0 ? `Stocks` : ``}>
-                                {results.map((stock, index) => (
-                                    <CommandItem
-                                        key={index}
-                                        onSelect={() => {
-                                            setValue(stock["2. name"]);
-                                            setOpen(false);
-                                            console.log(`Selected ${stock["2. name"]}`);
-                                        }}
+        <>
+            <div>
+                <Card className="flex flex-col gap-4 p-4 transition duration-300 w-full rounded-2xl shadow-lg">
+                    {/* Stock Search and Details Section */}
+                    <div className="flex flex-col gap-4">
+                        <div className="flex flex-row items-center gap-3">
+                            <Popover key={results.length} open={open} onOpenChange={setOpen}>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        role="combobox"
+                                        aria-expanded={open}
+                                        className="justify-between w-[300px]"
                                     >
-                                        <div className="flex justify-between w-full">
-                                            <div>
-                                                <p className="font-bold">{stock["2. name"]}</p>
-                                                <p className="text-sm text-gray-500">{stock["1. symbol"]} - {stock["4. region"]}</p>
-                                            </div>
-                                            {/* <p className="text-sm text-gray-500">{stock["8. currency"]}</p> */}
-                                        </div>
-                                    </CommandItem>
-                                ))}
-                            </CommandGroup>
-                        </CommandList>
-                    </Command>
-                </PopoverContent>
-            </Popover>
+                                        {value || "Search stocks, companies..."}
+                                        <ChevronsUpDown className="opacity-50" />
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="p-0 w-[300px]">
+                                    <Command>
+                                        <CommandInput
+                                            value={query}
+                                            onValueChange={setQuery}
+                                            placeholder="Search stocks, companies..."
+                                        />
+                                        <CommandList>
+                                            {loading && <CommandEmpty>Loading...</CommandEmpty>}
+                                            {results.length === 0 && !loading && <CommandEmpty>No results found.</CommandEmpty>}
+                                            <CommandGroup heading={results.length > 0 ? `Stocks` : ``}>
+                                                {results?.map((stock, index) => (
+                                                    <CommandItem
+                                                        key={index}
+                                                        onSelect={() => {
+                                                            setValue(stock["2. name"]);
+                                                            fetchStockDetails(stock["1. symbol"]);
+                                                            fetchStockNews(stock["1. symbol"]); // Fetch news here
+                                                            setOpen(false);
+                                                        }}
+                                                    >
+                                                        <div className="flex justify-between w-full">
+                                                            <div>
+                                                                <p className="font-bold">{stock["2. name"]}</p>
+                                                                <p className="text-sm text-gray-500">{stock["1. symbol"]} - {stock["4. region"]}</p>
+                                                            </div>
+                                                        </div>
+                                                    </CommandItem>
+                                                ))}
+                                            </CommandGroup>
+                                        </CommandList>
+                                    </Command>
+                                </PopoverContent>
+                            </Popover>
+                        </div>
 
-        </Card>
+                        {/* Stock Details Display */}
+                        {stockDetails && stockDetails["Global Quote"] && (
+                            <div className="p-4 rounded-xl border border-gray-300 bg-white shadow-md flex flex-col gap-4">
+                                {stockLoading ? (
+                                    <div className="flex justify-center items-center"><PuffLoader color="#60a8fb" /></div>
+                                ) : (
+                                    <>
+                                        <h2 className="text-xl font-bold mb-2">📊 Stock Details</h2>
+                                        <div className="grid grid-cols-2 gap-4 text-sm">
+                                            <p><strong>Symbol:</strong> {stockDetails["Global Quote"]["01. symbol"]}</p>
+                                            <p><strong>Open:</strong> {stockDetails["Global Quote"]["02. open"]}</p>
+                                            <p><strong>High:</strong> {stockDetails["Global Quote"]["03. high"]}</p>
+                                            <p><strong>Low:</strong> {stockDetails["Global Quote"]["04. low"]}</p>
+                                            <p><strong>Price:</strong> {stockDetails["Global Quote"]["05. price"]}</p>
+                                            <p><strong>Volume:</strong> {stockDetails["Global Quote"]["06. volume"]}</p>
+                                            <p><strong>Latest Trading Day:</strong> {stockDetails["Global Quote"]["07. latest trading day"]}</p>
+                                            <p><strong>Previous Close:</strong> {stockDetails["Global Quote"]["08. previous close"]}</p>
+                                            <p><strong>Change:</strong> {stockDetails["Global Quote"]["09. change"]}</p>
+                                            <p><strong>Change Percent:</strong> {stockDetails["Global Quote"]["10. change percent"]}</p>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* News Section */}
+                    {/* News Section */}
+                    {news && news.length >= 0 && (
+                        <div className="p-4 mt-4 rounded-xl border border-gray-300 bg-white shadow-md">
+                            <h2 className="text-xl font-bold mb-2">📰 Related News</h2>
+                            <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                                {news.map((article: any, index: number) => (
+                                    <div
+                                        key={index}
+                                        className="flex items-start gap-4 p-2 border-b border-gray-200"
+                                    >
+                                        {/* Article Image */}
+                                        <img
+                                            src={article.banner_image}
+                                            alt="News Banner"
+                                            className="w-20 h-20 object-cover rounded-md"
+                                        />
+
+                                        <div className="flex-1">
+                                            {/* Article Title */}
+                                            <a
+                                                href={article.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-blue-500 font-semibold hover:underline"
+                                            >
+                                                {article.title}
+                                            </a>
+
+                                            {/* Article Summary */}
+                                            <p className="text-sm text-gray-600 mt-1">
+                                                {article.summary}
+                                            </p>
+
+                                            {/* Article Metadata */}
+                                            <div className="flex items-center justify-between text-xs text-gray-500 mt-1">
+                                                <span>Source: {article.source}</span>
+                                                <span>Published: {article.time_published.slice(0, 4)}-{article.time_published.slice(4, 6)}-{article.time_published.slice(6, 8)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                </Card>
+            </div>
+
+        </>
+
     );
 }

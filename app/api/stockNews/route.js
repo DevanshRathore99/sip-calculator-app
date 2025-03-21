@@ -10,8 +10,8 @@ export async function GET(request) {
 
     try {
         const API_KEY = process.env.NEXT_PUBLIC_API_KEY; // Make sure you set this in your .env file
-        const response = await fetch(`https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${query}&apikey=${API_KEY}`);
-        
+        const response = await fetch(`https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=${query}&limit=1&apikey=${API_KEY}`);
+
         if (!response.ok) {
             return NextResponse.json({ error: 'Failed to fetch data from Alpha Vantage' }, { status: 500 });
         }

@@ -70,7 +70,7 @@ export function SipCalculator() {
         <>
             <div className="flex gap-4">
 
-                <Card className="max-w-3xl">
+                <Card className=" transition duration-300">
                     <CardHeader>
                         <CardTitle className="flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2">
@@ -82,7 +82,7 @@ export function SipCalculator() {
                         <CardDescription>Calculate the future value of your Systematic Investment Plan</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-8">
-                        <div className="grid gap-6 md:grid-cols-2">
+                        <div className="grid gap-6 lg:grid-cols-2">
                             <div className="space-y-4">
                                 <div className="space-y-2">
                                     <div className="flex justify-between">
@@ -177,9 +177,9 @@ export function SipCalculator() {
                             </div>
                         </div>
 
-                        <div className="h-[350px] mt-8">
+                        <div className=" mt-8">
                             <h3 className="text-lg font-medium mb-4">Investment Breakdown</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <ChartContainer
                                     config={{
                                         investment: {

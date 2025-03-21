@@ -13,10 +13,12 @@ const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     rules: {
-      "@typescript-eslint/no-unused-vars": "off",     // Disables unused vars error
-      "react-hooks/exhaustive-deps": "off",            // Disables useEffect dependency warning
+      "@typescript-eslint/no-unused-vars": "off",
+      "react-hooks/exhaustive-deps": "off",
+      "@typescript-eslint/no-explicit-any": "off"  // Add this line to disable the 'any' error
     },
   },
 ];
+
 
 export default eslintConfig;
