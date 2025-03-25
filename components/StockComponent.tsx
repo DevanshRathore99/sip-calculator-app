@@ -203,7 +203,7 @@ export default function StockComponent() {
                     {/* News Section */}
                     {/* News Section */}
                     {news && (
-                        <div className="p-4 mt-4 rounded-xl border border-gray-300 bg-white shadow-md">
+                        <div className="p-4 mt-4 rounded-xl border border-gray-300 shadow-md">
                             <h2 className="text-xl font-bold mb-2">📰 Related News</h2>
                             <div className="overflow-y-auto">
                                 {/* {news.map((news: any, index: number) => ( */}
