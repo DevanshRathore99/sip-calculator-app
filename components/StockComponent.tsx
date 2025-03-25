@@ -5,6 +5,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button"
 import { ChevronsUpDown } from "lucide-react"
 import { PuffLoader } from "react-spinners";
+import Image from "next/image";
+import Link from "next/link";
 
 interface StockResult {
     "1. symbol": string;
@@ -25,7 +27,7 @@ export default function StockComponent() {
     const [value, setValue] = useState("")
     const [stockDetails, setStockDetails] = useState<any>(null);
     const [news, setNews] = useState<any>(null);
-    // console.log(news, 'NNNNNNNNNNNNNNNNNnn');
+    console.log(news, 'NNNNNNNNNNNNNNNNNnn');
 
 
     const [stockLoading, setStockLoading] = useState(false);
@@ -200,46 +202,48 @@ export default function StockComponent() {
 
                     {/* News Section */}
                     {/* News Section */}
-                    {news && news.length >= 0 && (
+                    {news && (
                         <div className="p-4 mt-4 rounded-xl border border-gray-300 bg-white shadow-md">
                             <h2 className="text-xl font-bold mb-2">📰 Related News</h2>
-                            <div className="space-y-3 max-h-[400px] overflow-y-auto">
-                                {news.map((article: any, index: number) => (
-                                    <div
-                                        key={index}
-                                        className="flex items-start gap-4 p-2 border-b border-gray-200"
-                                    >
-                                        {/* Article Image */}
-                                        <img
-                                            src={article.banner_image}
-                                            alt="News Banner"
-                                            className="w-20 h-20 object-cover rounded-md"
-                                        />
+                            <div className="overflow-y-auto">
+                                {/* {news.map((news: any, index: number) => ( */}
+                                <div
+                                    // key={index}
+                                    className="flex flex-col gap-4 p-2 border-b border-gray-200"
+                                >
+                                    {/* news Image */}
+                                    <Image
+                                        width={100}
+                                        height={100}
+                                        src={news.banner_image}
+                                        alt="News Banner"
+                                        className=" object-cover rounded-md"
+                                    />
 
-                                        <div className="flex-1">
-                                            {/* Article Title */}
-                                            <a
-                                                href={article.url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-blue-500 font-semibold hover:underline"
-                                            >
-                                                {article.title}
-                                            </a>
+                                    <div className="flex-1">
+                                        {/* news Title */}
+                                        <Link
+                                            href={news.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-500 font-semibold hover:underline"
+                                        >
+                                            {news.title}
+                                        </Link>
 
-                                            {/* Article Summary */}
-                                            <p className="text-sm text-gray-600 mt-1">
-                                                {article.summary}
-                                            </p>
+                                        {/* news Summary */}
+                                        <p className="text-sm text-gray-600 mt-1">
+                                            {news.summary}
+                                        </p>
 
-                                            {/* Article Metadata */}
-                                            <div className="flex items-center justify-between text-xs text-gray-500 mt-1">
-                                                <span>Source: {article.source}</span>
-                                                <span>Published: {article.time_published.slice(0, 4)}-{article.time_published.slice(4, 6)}-{article.time_published.slice(6, 8)}</span>
-                                            </div>
+                                        {/* news Metadata */}
+                                        <div className="flex items-center justify-between text-xs text-gray-500 mt-1">
+                                            <span>Source: {news.source}</span>
+                                            <span>Published: {news.time_published.slice(0, 4)}-{news.time_published.slice(4, 6)}-{news.time_published.slice(6, 8)}</span>
                                         </div>
                                     </div>
-                                ))}
+                                </div>
+                                {/* ))} */}
                             </div>
                         </div>
                     )}
