@@ -191,7 +191,7 @@ export function SipCalculator() {
                                             color: "hsl(var(--chart-2))",
                                         },
                                     }}
-                                    className="aspect-square max-h-[300px] mx-auto"
+                                    className="aspect-square h-[300px] mx-auto"
                                 >
                                     <PieChart>
                                         <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />

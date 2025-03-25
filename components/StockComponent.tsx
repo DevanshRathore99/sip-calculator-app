@@ -27,7 +27,7 @@ export default function StockComponent() {
     const [value, setValue] = useState("")
     const [stockDetails, setStockDetails] = useState<any>(null);
     const [news, setNews] = useState<any>(null);
-    console.log(news, 'NNNNNNNNNNNNNNNNNnn');
+    // console.log(news, 'NNNNNNNNNNNNNNNNNnn');
 
 
     const [stockLoading, setStockLoading] = useState(false);
