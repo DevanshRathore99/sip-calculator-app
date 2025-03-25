@@ -212,13 +212,6 @@ export default function StockComponent() {
                                     className="flex flex-col gap-4 p-2 border-b border-gray-200"
                                 >
                                     {/* news Image */}
-                                    <Image
-                                        width={100}
-                                        height={100}
-                                        src={news.banner_image}
-                                        alt="News Banner"
-                                        className=" object-cover rounded-md"
-                                    />
 
                                     <div className="flex-1">
                                         {/* news Title */}
