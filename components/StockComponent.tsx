@@ -114,6 +114,7 @@ export default function StockComponent() {
             setNews(news.feed[0]);
         } catch (error) {
             console.error("Error fetching stock news:", error);
+            setNews(null);
             return null;
         }
     }
