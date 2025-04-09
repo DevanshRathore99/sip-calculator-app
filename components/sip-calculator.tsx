@@ -310,11 +310,8 @@ export function SipCalculator() {
             </div >
             <div>
                 <h3 className="mt-8 scroll-m-20 text-2xl font-semibold tracking-tight">
-                    Advantages of using Groww systematic investment plan calculator
+                    Advantages of using systematic investment plan calculator
                 </h3>
-                <p className="leading-7 [&:not(:first-child)]:mt-6">
-                    Groww offers the best SIP calculator, which provides the following advantages –
-                </p>
                 <ol className="my-6 ml-6 list-disc [&>li]:mt-2">
                     <li>Plan your investment based on the amount and tenure.</li>
                     <li>It helps you compute an estimation of the total value of investments at the end of your SIP tenure.</li>
